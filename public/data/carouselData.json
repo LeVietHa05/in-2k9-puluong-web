@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "imgLink": "/home-card-item-1.png",
+    "cardTitle": "rice farming experience",
+    "cardContent": "(Planting rice & pulling seedlings)"
+  },
+  {
+    "id": 2,
+    "imgLink": "/home-card-item-2.png",
+    "cardTitle": "Water Buffalo Village Ride",
+    "cardContent": "(Planting rice &This experience offers two gentle ways to explore village...."
+  },
+  {
+    "id": 3,
+    "imgLink": "/home-card-item-3.png",
+    "cardTitle": "Bamboo Craft, Rafts & Riverside Lunch",
+    "cardContent": "Bamboo plays a central role in daily life in Pù Luông, and this experience brings you close to that relationship."
+  },
+  {
+    "id": 4,
+    "imgLink": "/home-card-item-4.png",
+    "cardTitle": "Learning Local Dances with Villagers",
+    "cardContent": "Learning simple local dances with villagers is informal and relaxed. Steps are taught casually,.."
+  },
+  {
+    "id": 5,
+    "imgLink": "/home-card-item-5.png",
+    "cardTitle": "Local Cooking Classes",
+    "cardContent": "Joining cooking classes allows you to prepare authentic local dishes alongside families using ingredients sourced from nearby"
+  },
+  {
+    "id": 6,
+    "imgLink": "/home-card-item-6.png",
+    "cardTitle": "Phố Đoàn Market Visit",
+    "cardContent": "Visiting Phố Đoàn market offers a look into the heart of local trade and everyday interaction."
+  },
+  {
+    "id": 7,
+    "imgLink": "/home-card-item-7.png",
+    "cardTitle": "Communal Campfire Evenings",
+    "cardContent": "Gathering around communal campfires brings the day to a gentle close. Locals, volunteers, and visitors sit together to share food, stories,"
+  },
+  {
+    "id": 8,
+    "imgLink": "/home-card-item-8.png",
+    "cardTitle": "Hand-Picking Starfruit",
+    "cardContent": "Hand-picking starfruit straight from local gardens offers a simple introduction to seasonal eating."
+  }
+]
