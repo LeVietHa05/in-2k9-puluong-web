@@ -14,8 +14,8 @@ export default async function Home() {
       <div className="pt-[112px]">
 
       </div>
-      <Image className="w-full" src={'/home-placeholder.png'} width={1280} height={714} alt="placeholder" loading="eager"></Image>
 
+      <iframe src="https://drive.google.com/file/d/1aAjarHL10XC7YMsOg-kfwUShZvmp5XLw/preview?" allowFullScreen allow="autoplay" className="w-full max-h-[1280px] aspect-16/9"></iframe>
       {/* header */}
       <div className="bg-main-bg">
         <div className="max-w-7xl mx-auto px-21 py-10 text-white flex items-center">
@@ -176,16 +176,26 @@ export default async function Home() {
           <div className="w-1/3 flex-shrink-0">
             <Image src={'/home-footer.png'} width={536} height={741} alt="" ></Image>
           </div>
-          <div>
-            <div>
+          <div className="p-12">
+            <div className="font-bold text-5xl/15 uppercase mb-8">
               Meet <br />
               the Founder <br />
               & Our Team <br />
             </div>
-            <div>
+            <div className="text-2xl text-justify">
               Behind Pù Luông’s Paths is a small but committed team — young people, locals, volunteers, and collaborators who believe that impact doesn’t require scale, but sincerity. <br />
-              Founder : <br />
+              <span className="underline mt-8 inline-block">Founder</span> : <br />
               Truong Nam Anh: With a strong desire to travel, experience new places, and understand Vietnam beyond the surface, our founder is especially curious about how local economies - particularly tourism - truly work. This project grew from that curiosity, turning personal exploration into an opportunity for learning, cultural exchange, and shared growth.
+            </div>
+            <div className="mt-12">
+              <div className="flex justify-between bg-white text-main-bg rounded-full p-4">
+                <div className="font-bold text-3xl/10 uppercase px-3">
+                  Chat with our leader
+                </div>
+                <div>
+                  <Image src={'/arrow5-green.png'} alt="" width={42} height={40} className="h-auto"></Image>
+                </div>
+              </div>
             </div>
           </div>
         </div>
