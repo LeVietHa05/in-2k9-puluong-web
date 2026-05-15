@@ -16,7 +16,7 @@ export const ExperiencesCarousel = () => {
     useEffect(() => {
         const updateScroll = () => {
             if (!containerRef.current || !constraintRef.current) return;
-            console.log(containerRef.current.scrollWidth)
+            // console.log(containerRef.current.scrollWidth)
 
             const scrollWidth = containerRef.current.scrollWidth - containerRef.current.clientWidth;
             const trackWidth = constraintRef.current.clientWidth - 40; // 40 là chiều rộng nút tròn
