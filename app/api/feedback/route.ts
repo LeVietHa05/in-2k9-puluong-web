@@ -90,3 +90,71 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Có lỗi xảy ra tại hệ thống" }, { status: 500 });
     }
 }
+
+
+
+export async function GET(req: NextRequest) {
+    // Thêm GET vào cùng file /api/feedback/route.ts (nơi chứa POST)
+
+    try {
+        // 1. Lấy tham số phân trang từ URL (Mặc định: trang 1, mỗi trang 5 bài)
+        const { searchParams } = new URL(req.url);
+        const page = parseInt(searchParams.get("page") || "1");
+        const limit = parseInt(searchParams.get("limit") || "5");
+
+        const auth = new google.auth.GoogleAuth({
+            credentials: {
+                client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+                private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+            },
+            scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+        })
+
+        const sheets = google.sheets({ version: "v4", auth });
+
+        const response = await sheets.spreadsheets.values.get({
+            spreadsheetId: process.env.GOOGLE_SHEET_ID,
+            range: "Sheet1!A2:E", // Lấy từ hàng 2 để bỏ qua hàng tiêu đề cột A,B,C,D,E
+        });
+
+        const rows = response.data.values || [];
+        // Đảo ngược danh sách gốc ngay lập tức để bài mới nhất luôn nằm ở đầu
+        const allRowsReversed = [...rows].reverse();
+
+        // 2. Tính toán vị trí cắt mảng dữ liệu (Slice) dựa theo Page và Limit
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
+        const paginatedRows = allRowsReversed.slice(startIndex, endIndex);
+
+        // Kiểm tra xem còn dữ liệu cho trang tiếp theo không
+        const hasMore = endIndex < allRowsReversed.length;
+
+        // Chuyển đổi mảng thô thành danh sách object có cấu trúc dễ dùng
+        const feedbacks = paginatedRows.map((row, index) => {
+            // Vì cột ảnh (E) có thể chứa nhiều link phân tách bằng dấu xuống dòng (\n)
+            const rawImages = row[4] ? row[4].split("\n") : [];
+            const images = rawImages.filter((url: string) => url.trim() !== "");
+
+            return {
+                id: index,
+                time: row[0] || "",
+                name: row[1] || "Ẩn danh",
+                vote: parseInt(row[2]) || 5,
+                feedback: row[3] || "",
+                images: images, // Trả về mảng các link ảnh để dễ map ở frontend
+            };
+        });
+
+        // Trả về danh sách đảo ngược (Mới nhất lên đầu)
+        return NextResponse.json({
+            success: true,
+            data: feedbacks,
+            hasMore: hasMore
+        });
+
+    } catch (error) {
+        console.error("Lỗi lấy dữ liệu Google Sheets:", error);
+        return NextResponse.json({ error: "Không thể tải dữ liệu" }, { status: 500 });
+    }
+}
+
