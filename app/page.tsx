@@ -23,7 +23,7 @@ export default async function Home() {
             <div>
               puluong&apos;s
             </div>
-            <div>path</div>
+            <div>paths</div>
           </div>
           <div className="text-justify w-1/2 text-[24px] pl-12">
             Founded in 2026, Pù Luông&apos;s Paths was born from quiet mornings in rice fields and long conversations by campfires. With this in mind, we hope to create journeys that leave behind shared understanding and a quiet sense of belonging — for both those who come, and those who call this place home.
@@ -157,7 +157,7 @@ export default async function Home() {
                 At the intersection of these gaps, we saw not a problem — but a purpose.
               </li>
             </ul>
-            <div className="w-fit mx-auto bg-main-bg rounded-full px-12 py-1 flex gap-12  items-center text-white uppercase text-2xl hover:scale-105 hover:bg-[#1a472a] transition-all duration-300 hover:cursor-pointer">
+            {/* <div className="w-fit mx-auto bg-main-bg rounded-full px-12 py-1 flex gap-12  items-center text-white uppercase text-2xl hover:scale-105 hover:bg-[#1a472a] transition-all duration-300 hover:cursor-pointer">
               <div>
                 <Link href={'https://accomplishments.northeastern.edu/#_ga=2.13041009.773277243.1692905027-2099924813.1692729368'}>
                   Learn more about our impact
@@ -166,7 +166,7 @@ export default async function Home() {
               <div>
                 <Image src={'/arrow5.png'} width={42} height={40} alt="" className="w-auto"></Image>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

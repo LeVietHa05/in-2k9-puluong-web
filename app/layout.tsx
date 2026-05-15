@@ -8,8 +8,8 @@ const helvetica = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Pu luong's path",
-  description: "Pu luong's path ",
+  title: "Pu luong's paths",
+  description: "Pu luong's paths ",
 };
 
 export default function RootLayout({

@@ -33,8 +33,8 @@ export default function Nav({ isTransparent }: NavProps) {
     return (
         <div className={`fixed top-0 left-0 right-0 z-50 uppercase flex px-16 py-2 justify-between items-center transition-all duration-500  ${navbg}`}>
             <Link href={'/'} className=" text-[32px] font-bold hover:underline">
-                pulong&apos;s
-                <div>path</div>
+                puluong&apos;s
+                <div>paths</div>
             </Link>
             <div className="text-xl w-132 border-2 rounded-full py-4 px-12 flex justify-between items-center ">
                 <div className={`${path == 'booking' ? "font-bold underline" : ""} hover:font-bold hover:cursor-pointer`}>
