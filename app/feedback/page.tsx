@@ -4,6 +4,7 @@
 
 import Image from "next/image";
 import Nav from "../components/nav";
+import FeedbackList from "../components/feedback-view";
 
 import { useState, useRef, useEffect } from "react";
 
@@ -346,35 +347,8 @@ export default function Event() {
                     </div>
                 </div>
 
-                <div className="pl-12">
-                    <div>
-                        <div className="mt-8 flex gap-6">
-                            <div className="size-12 rounded-full bg-main-bg">
-
-                            </div>
-                            <div className="capitalize">
-                                <div>
-                                    bún Đậu
-                                </div>
-                                <div className="flex pb-6">
-                                    <Image src={'/star.svg'} width={20} height={20} alt="star"></Image>
-                                    <Image src={'/star.svg'} width={20} height={20} alt="star"></Image>
-                                    <Image src={'/star.svg'} width={20} height={20} alt="star"></Image>
-                                    <Image src={'/star.svg'} width={20} height={20} alt="star"></Image>
-                                    <Image src={'/star.svg'} width={20} height={20} alt="star"></Image>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="text-sm text-justify">
-                            On 31/1/26, Pu Luong took the first step on Pu Luong, with our high spirit to engage directly with the local community through organized service. The project took place with the aid of various donors and aimed to extend the tourists’ insights on not only Pu Luong’s but also Vietnam’s culture. From the planning stage to real-time implementation, the project was driven by a mutual desire to contribute directly and positively.....
-                        </div>
-                        <div className="animate-pulse flex gap-2 mt-8">
-                            <div className="w-2/5 h-40 bg-gray-200"></div>
-                            <div className="w-1/5 h-40 bg-gray-200"></div>
-                            <div className="w-2/5 h-40 bg-gray-200"></div>
-                        </div>
-                    </div>
-                </div>
+                {/* hien thi feedback */} 
+                <FeedbackList />
             </div>
         </div>
     )
