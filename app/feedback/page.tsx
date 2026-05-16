@@ -4,7 +4,9 @@
 
 import Image from "next/image";
 import Nav from "../components/nav";
-import FeedbackList from "../components/feedback-view";
+import FeedbackList, { FeedbackItem } from "../components/feedback-view";
+import FeedbackSummary from "../components/feedback-sumary";
+import ImagePreviewItem from "../components/fb-image-preview";
 
 import { useState, useRef, useEffect } from "react";
 
@@ -13,6 +15,12 @@ export default function Event() {
     const [selectedImages, setSelectedImages] = useState<File[]>([])
     const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
     const [message, setMessage] = useState("");
+
+    const [feedbacks, setFeedbacks] = useState<FeedbackItem[]>([]);
+    const [summary, setSummary] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [initialHasMore, setInitialHasMore] = useState(true)
+
     const inputRef = useRef<HTMLInputElement>(null)
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -108,6 +116,26 @@ export default function Event() {
         };
     }, [isWritingForm]);
 
+    useEffect(() => {
+        const loadInitialData = async () => {
+            try {
+                const res = await fetch("/api/feedback?page=1&limit=5");
+                const result = await res.json();
+                if (res.ok && result.success) {
+                    setFeedbacks(result.data);
+                    setSummary(result.summary); // Lưu cục thống kê
+                    setInitialHasMore(result.hasMore)
+                }
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadInitialData();
+    }, []);
+
+
     return (
         <div className="text-main-bg">
             <Nav isTransparent={true} />
@@ -119,80 +147,7 @@ export default function Event() {
                     <div className="text-[32px] font-bold capitalize">
                         feedbacks
                     </div>
-                    <div className="flex items-end gap-2">
-                        <div className="text-8xl/30 font-bold">
-                            5.0
-                        </div>
-                        <div className="flex pb-6">
-                            <Image src={'/star.svg'} width={33} height={33} alt="star"></Image>
-                            <Image src={'/star.svg'} width={33} height={33} alt="star"></Image>
-                            <Image src={'/star.svg'} width={33} height={33} alt="star"></Image>
-                            <Image src={'/star.svg'} width={33} height={33} alt="star"></Image>
-                            <Image src={'/star.svg'} width={33} height={33} alt="star"></Image>
-                        </div>
-                    </div>
-                    <div className="space-y-4">
-                        <div className=" flex items-center gap-2">
-                            <div className="text-2xl">5</div>
-                            <div>
-                                <Image src={'/star2.svg'} width={23} height={23} alt="star"></Image>
-                            </div>
-                            <div className="w-4/5 bg-[#FBC924] rounded-full h-4">
-
-                            </div>
-                            <div className="text-2xl">
-                                1
-                            </div>
-                        </div>
-                        <div className=" flex items-center gap-2">
-                            <div className="text-2xl">4</div>
-                            <div>
-                                <Image src={'/star2.svg'} width={23} height={23} alt="star"></Image>
-                            </div>
-                            <div className="w-4/5 bg-[#D9D9D9] rounded-full h-4">
-
-                            </div>
-                            <div className="text-2xl">
-                                0
-                            </div>
-                        </div>
-                        <div className=" flex items-center gap-2">
-                            <div className="text-2xl">3</div>
-                            <div>
-                                <Image src={'/star2.svg'} width={23} height={23} alt="star"></Image>
-                            </div>
-                            <div className="w-4/5 bg-[#D9D9D9] rounded-full h-4">
-
-                            </div>
-                            <div className="text-2xl">
-                                0
-                            </div>
-                        </div>
-                        <div className=" flex items-center gap-2">
-                            <div className="text-2xl">2</div>
-                            <div>
-                                <Image src={'/star2.svg'} width={23} height={23} alt="star"></Image>
-                            </div>
-                            <div className="w-4/5 bg-[#D9D9D9] rounded-full h-4">
-
-                            </div>
-                            <div className="text-2xl">
-                                0
-                            </div>
-                        </div>
-                        <div className=" flex items-center gap-2">
-                            <div className="text-2xl">1</div>
-                            <div>
-                                <Image src={'/star2.svg'} width={23} height={23} alt="star"></Image>
-                            </div>
-                            <div className="w-4/5 bg-[#D9D9D9] rounded-full h-4">
-
-                            </div>
-                            <div className="text-2xl">
-                                0
-                            </div>
-                        </div>
-                    </div>
+                    <FeedbackSummary isLoading={isLoading} summary={summary} />
 
                     <div className="mt-12">
                         <div
@@ -290,27 +245,14 @@ export default function Event() {
                                         {/* Khu vực hiển thị danh sách ảnh xem trước (Preview Grid) */}
                                         {selectedImages.length > 0 && (
                                             <div className="grid grid-cols-4 gap-2 mb-6 p-2 border rounded-md bg-gray-50">
-                                                {selectedImages.map((file, index) => {
-                                                    const previewUrl = URL.createObjectURL(file);
-                                                    return (
-                                                        <div key={index} className="relative aspect-square rounded overflow-hidden border bg-white group">
-                                                            <Image
-                                                                src={previewUrl}
-                                                                alt="preview"
-                                                                fill
-                                                                className="w-full h-full object-cover"
-                                                            />
-                                                            {/* Nút xóa ảnh nhỏ ở góc */}
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => removeImage(index)}
-                                                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-90 hover:opacity-100 shadow-md"
-                                                            >
-                                                                &times;
-                                                            </button>
-                                                        </div>
-                                                    );
-                                                })}
+                                                {selectedImages.map((file, index) => (
+                                                    <ImagePreviewItem
+                                                        file={file}
+                                                        onRemove={() => { removeImage(index) }}
+                                                        status={status}
+                                                        key={`${file.name}-${index}`}
+                                                    />
+                                                ))}
                                             </div>
                                         )}
 
@@ -347,8 +289,8 @@ export default function Event() {
                     </div>
                 </div>
 
-                {/* hien thi feedback */} 
-                <FeedbackList />
+                {/* hien thi feedback */}
+                <FeedbackList initialData={feedbacks} initialHasMore={initialHasMore} initLoading={isLoading} />
             </div>
         </div>
     )

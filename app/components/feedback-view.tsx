@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 
 // Định nghĩa kiểu dữ liệu cho Feedback (nếu bạn xài TypeScript)
-interface FeedbackItem {
+export interface FeedbackItem {
     id: number;
     time: string;
     name: string;
@@ -12,7 +12,13 @@ interface FeedbackItem {
     images: string[];
 }
 
-export default function FeedbackList() {
+interface FeedbackProp {
+    initialData: FeedbackItem[],
+    initialHasMore: boolean,
+    initLoading: boolean
+}
+
+export default function FeedbackList({ initialData, initialHasMore, initLoading }: FeedbackProp) {
     const [feedbacks, setFeedbacks] = useState<FeedbackItem[]>([]);
     const [page, setPage] = useState(1); // Quản lý số trang hiện tại
     const [hasMore, setHasMore] = useState(false); // Cờ hiệu còn bài để tải không
@@ -46,11 +52,13 @@ export default function FeedbackList() {
     };
     // Fetch dữ liệu từ API khi trang được tải
     useEffect(() => {
-        const loadInitialFeedbacks = async () => {
-            await fetchFeedbacks(1);
+        const init = () => {
+            setFeedbacks(initialData)
+            setHasMore(initialHasMore)
+            setIsInitialLoading(initLoading)
         };
-        loadInitialFeedbacks();
-    }, []);
+        init()
+    }, [initialData]);
 
     const handleLoadMore = () => {
         const nextPage = page + 1;
@@ -104,9 +112,9 @@ export default function FeedbackList() {
 
     // 2. GIAO DIỆN HIỂN THỊ DỮ LIỆU THẬT
     return (
-        <div className="pl-12 space-y-12">
+        <div className="pl-12 space-y-12 max-h-[50vh] overflow-y-scroll">
             {feedbacks.map((item) => (
-                <div key={item.id} className="border-b border-gray-100 pb-8 last:border-none">
+                <div key={item.time} className="border-b border-gray-100 pb-8 last:border-none">
                     <div className="mt-8 flex gap-6">
                         {/* User's profile image placeholder */}
                         <div className="size-12 rounded-full bg-main-bg flex items-center justify-center text-white font-bold text-lg select-none">
@@ -151,6 +159,7 @@ export default function FeedbackList() {
                                     <Image
                                         src={imgUrl}
                                         fill
+                                        sizes=""
                                         alt={`feedback-img-${idx}`}
                                         className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                                     />

@@ -121,6 +121,20 @@ export async function GET(req: NextRequest) {
         // Đảo ngược danh sách gốc ngay lập tức để bài mới nhất luôn nằm ở đầu
         const allRowsReversed = [...rows].reverse();
 
+        const totalReviews = rows.length;
+        let totalStars = 0;
+        const ratingDistribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+
+        rows.forEach((row) => {
+            const vote = parseInt(row[2]) || 5; // Cột C chứa điểm vote
+            totalStars += vote;
+            if (vote >= 1 && vote <= 5) {
+                ratingDistribution[vote as 1 | 2 | 3 | 4 | 5]++;
+            }
+        });
+
+        const averageRating = totalReviews > 0 ? (totalStars / totalReviews).toFixed(1) : "0.0";
+
         // 2. Tính toán vị trí cắt mảng dữ liệu (Slice) dựa theo Page và Limit
         const startIndex = (page - 1) * limit;
         const endIndex = page * limit;
@@ -149,7 +163,12 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({
             success: true,
             data: feedbacks,
-            hasMore: hasMore
+            hasMore: hasMore,
+            summary: {
+                totalReviews,
+                averageRating: parseFloat(averageRating),
+                distribution: ratingDistribution
+            }
         });
 
     } catch (error) {
