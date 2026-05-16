@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-interface SummaryData {
+export interface SummaryData {
     totalReviews: number;
     averageRating: number;
     distribution: {

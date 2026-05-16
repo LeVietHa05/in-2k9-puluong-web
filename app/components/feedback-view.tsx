@@ -1,6 +1,5 @@
 'use client'
 import Image from "next/image";
-import { useState, useEffect } from "react";
 
 // Định nghĩa kiểu dữ liệu cho Feedback (nếu bạn xài TypeScript)
 export interface FeedbackItem {
@@ -13,62 +12,17 @@ export interface FeedbackItem {
 }
 
 interface FeedbackProp {
-    initialData: FeedbackItem[],
-    initialHasMore: boolean,
-    initLoading: boolean
+    feedbacks: FeedbackItem[],
+    hasMore: boolean,
+    isLoading: boolean,
+    isMoreLoading: boolean,
+    onLoadMore: () => void,
 }
 
-export default function FeedbackList({ initialData, initialHasMore, initLoading }: FeedbackProp) {
-    const [feedbacks, setFeedbacks] = useState<FeedbackItem[]>([]);
-    const [page, setPage] = useState(1); // Quản lý số trang hiện tại
-    const [hasMore, setHasMore] = useState(false); // Cờ hiệu còn bài để tải không
-    const [isInitialLoading, setIsInitialLoading] = useState(true); // Loading lần đầu (hiện skeleton)
-    const [isMoreLoading, setIsMoreLoading] = useState(false); // Loading khi bấm xem thêm (hiện spinner nhỏ)
-
-
-    const fetchFeedbacks = async (pageNumber: number) => {
-        try {
-            if (pageNumber === 1) setIsInitialLoading(true);
-            else setIsMoreLoading(true);
-
-            const res = await fetch(`/api/feedback?page=${pageNumber}&limit=5`);
-            const result = await res.json();
-
-            if (res.ok && result.success) {
-                if (pageNumber === 1) {
-                    setFeedbacks(result.data);
-                } else {
-                    // Cộng dồn dữ liệu mới vào danh sách cũ đang hiển thị
-                    setFeedbacks((prev) => prev.concat(result.data));
-                }
-                setHasMore(result.hasMore);
-            }
-        } catch (error) {
-            console.error("Lỗi khi fetch danh sách feedback:", error);
-        } finally {
-            setIsInitialLoading(false);
-            setIsMoreLoading(false);
-        }
-    };
-    // Fetch dữ liệu từ API khi trang được tải
-    useEffect(() => {
-        const init = () => {
-            setFeedbacks(initialData)
-            setHasMore(initialHasMore)
-            setIsInitialLoading(initLoading)
-        };
-        init()
-    }, [initialData]);
-
-    const handleLoadMore = () => {
-        const nextPage = page + 1;
-        setPage(nextPage);
-        fetchFeedbacks(nextPage);
-    };
-
+export default function FeedbackList({ feedbacks, hasMore, isLoading, isMoreLoading, onLoadMore }: FeedbackProp) {
 
     // 1. COMPONENT SKELETON LOADING (Hiển thị 3 hàng mẫu khi đang tải dữ liệu)
-    if (isInitialLoading) {
+    if (isLoading) {
         return (
             <div className="pl-12 space-y-12">
                 {[1, 2, 3].map((n) => (
@@ -175,7 +129,7 @@ export default function FeedbackList({ initialData, initialHasMore, initLoading 
             {hasMore && (
                 <div className="pt-4 text-center">
                     <button
-                        onClick={handleLoadMore}
+                        onClick={onLoadMore}
                         disabled={isMoreLoading}
                         className="px-6 py-2.5 border-2 border-main-bg text-main-bg font-bold rounded-md hover:bg-main-bg hover:text-white transition-all duration-300 disabled:opacity-50 inline-flex items-center gap-2"
                     >

@@ -82,8 +82,17 @@ export async function POST(req: NextRequest) {
             },
         });
 
+        const newFeedbackItem = {
+            id: 0,
+            time: currentDate,
+            name: name,
+            vote: parseInt(vote) || 5,
+            feedback: feedback,
+            images: uploadedUrls // Mảng chứa các link ảnh từ Cloudinary
+        };
+
         // 5. Trả về kết quả thành công  
-        return NextResponse.json({ success: true, message: "Thank you for your feedback" });
+        return NextResponse.json({ success: true, message: "Thank you for your feedback", newFeedback: newFeedbackItem });
 
     } catch (error) {
         console.error("Lỗi API Feedback:", error);

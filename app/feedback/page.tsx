@@ -5,7 +5,7 @@
 import Image from "next/image";
 import Nav from "../components/nav";
 import FeedbackList, { FeedbackItem } from "../components/feedback-view";
-import FeedbackSummary from "../components/feedback-sumary";
+import FeedbackSummary, { SummaryData } from "../components/feedback-sumary";
 import ImagePreviewItem from "../components/fb-image-preview";
 
 import { useState, useRef, useEffect } from "react";
@@ -17,9 +17,11 @@ export default function Event() {
     const [message, setMessage] = useState("");
 
     const [feedbacks, setFeedbacks] = useState<FeedbackItem[]>([]);
-    const [summary, setSummary] = useState(null);
+    const [summary, setSummary] = useState<SummaryData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [initialHasMore, setInitialHasMore] = useState(true)
+    const [page, setPage] = useState(1); // Quản lý số trang hiện tại
+    const [hasMore, setHasMore] = useState(false); // Cờ hiệu còn bài để tải không
+    const [isMoreLoading, setIsMoreLoading] = useState(false);
 
     const inputRef = useRef<HTMLInputElement>(null)
 
@@ -47,7 +49,7 @@ export default function Event() {
         setIsWritingForm(true);
     }
 
-    const handldeSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault(); // Ngăn trang bị reload mặc định
         setStatus("loading");
         setMessage("");
@@ -73,6 +75,7 @@ export default function Event() {
                     setStatus("success");
                     setMessage(data.message);
                     setSelectedImages([]); // Xóa danh sách ảnh cũ
+                    handleFeedbackAdded(data.newFeedback)
                 }, 10)
 
                 // Tự động đóng modal sau 3 giây khi thành công
@@ -92,6 +95,7 @@ export default function Event() {
         }
     }
 
+    //focus on click
     useEffect(() => {
         if (isWritingForm) {
             setTimeout(() => {
@@ -100,10 +104,11 @@ export default function Event() {
         }
     }, [isWritingForm]);
 
+    //key event
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === "Escape") {
-                setIsWritingForm(false);
+                closeModal();
             }
         };
 
@@ -116,6 +121,7 @@ export default function Event() {
         };
     }, [isWritingForm]);
 
+    //init loading
     useEffect(() => {
         const loadInitialData = async () => {
             try {
@@ -123,8 +129,8 @@ export default function Event() {
                 const result = await res.json();
                 if (res.ok && result.success) {
                     setFeedbacks(result.data);
-                    setSummary(result.summary); // Lưu cục thống kê
-                    setInitialHasMore(result.hasMore)
+                    setSummary(result.summary); // Lưu cục thống kê 
+                    setHasMore(result.hasMore)
                 }
             } catch (error) {
                 console.error(error);
@@ -135,6 +141,52 @@ export default function Event() {
         loadInitialData();
     }, []);
 
+    //state syncing (local sync)
+    const handleFeedbackAdded = (newFeedback: FeedbackItem) => {
+        // 1. Đẩy bài viết mới lên đầu danh sách hiển thị
+        setFeedbacks((prev) => [newFeedback, ...prev]);
+
+        // 2. Tính toán lại cục summary dựa trên dữ liệu cũ có sẵn
+        setSummary((prevSummary) => {
+            if (!prevSummary) return null;
+
+            const nextTotalReviews = prevSummary.totalReviews + 1;
+            const starLevel = newFeedback.vote as 1 | 2 | 3 | 4 | 5;
+
+            // Cộng thêm 1 vào mức sao tương ứng
+            const nextDistribution = {
+                ...prevSummary.distribution,
+                [starLevel]: prevSummary.distribution[starLevel] + 1
+            };
+
+            // Tính lại điểm số trung bình mới
+            // Công thức: ((Điểm cũ * Tổng số bài cũ) + Điểm bài mới) / Tổng số bài mới
+            const nextAverageRating = ((prevSummary.averageRating * prevSummary.totalReviews) + newFeedback.vote) / nextTotalReviews;
+
+            return {
+                totalReviews: nextTotalReviews,
+                averageRating: +Number(nextAverageRating).toFixed(1),
+                distribution: nextDistribution
+            };
+        });
+    };
+
+    const fetchFeedbacks = async (pageNumber: number) => {
+        try {
+            if (pageNumber === 1) return;
+            setIsMoreLoading(true);
+            const res = await fetch(`/api/feedback?page=${pageNumber}&limit=5`);
+            const result = await res.json();
+            if (res.ok && result.success) {
+                setFeedbacks((prev) => prev.concat(result.data));
+                setHasMore(result.hasMore);
+            }
+        } catch (error) {
+            console.error("Lỗi khi fetch danh sách feedback:", error);
+        } finally {
+            setIsMoreLoading(false);
+        }
+    };
 
     return (
         <div className="text-main-bg">
@@ -194,7 +246,7 @@ export default function Event() {
                                 {/* Modal   */}
                                 {status !== "success" && (
                                     <form
-                                        onSubmit={handldeSubmit}
+                                        onSubmit={handleSubmit}
                                         encType="multipart/form-data"
                                         className="p-6 max-h-[80vh] overflow-y-auto"
                                     >
@@ -290,7 +342,7 @@ export default function Event() {
                 </div>
 
                 {/* hien thi feedback */}
-                <FeedbackList initialData={feedbacks} initialHasMore={initialHasMore} initLoading={isLoading} />
+                <FeedbackList feedbacks={feedbacks} hasMore={hasMore} isLoading={isLoading} isMoreLoading={isMoreLoading} onLoadMore={() => { const next = page + 1; setPage(next); fetchFeedbacks(next); }} />
             </div>
         </div>
     )
